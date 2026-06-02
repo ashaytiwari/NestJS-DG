@@ -5,12 +5,7 @@ import { MessagesRepository } from './messages.repository';
 @Injectable()
 export class MessagesService {
 
-  messagesRepository: MessagesRepository;
-
-  constructor() {
-    // Temporary solution until we implement dependency injection
-    this.messagesRepository = new MessagesRepository();
-  }
+  constructor(public messagesRepository: MessagesRepository) { }
 
   async findOne(id: string) {
     return this.messagesRepository.findOne(id);
