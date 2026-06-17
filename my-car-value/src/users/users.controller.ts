@@ -1,11 +1,25 @@
-import { Body, Controller, Post, Get, Patch, Param, Query, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Param,
+  Query,
+  Delete,
+  UseInterceptors,
+} from '@nestjs/common';
 
 import { UsersService } from './users.service';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserDto } from './dto/user.dto';
+
+import { Serialize, SerializeInterceptor } from '../interceptors/serialize.interceptor';
 
 @Controller('auth')
+@Serialize(UserDto) // custom decorator to use SerializeInterceptor
 export class UsersController {
 
   constructor(private readonly usersService: UsersService) { }
