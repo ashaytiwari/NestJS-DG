@@ -35,6 +35,25 @@ export class AuthService {
 
   }
 
-  signin() { }
+  async signin(email: string, password: string) {
+
+    // Check if user with the same email exists or not
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('User with this email does not exist');
+    }
+
+    const [salt, storedHash] = user.password.split('.');
+
+    const hash = (await scrypt(password, salt, 32)) as Buffer;
+
+    if (storedHash !== hash.toString('hex')) {
+      throw new ForbiddenException('Invalid password');
+    }
+
+    return user;
+
+  }
 
 }
