@@ -42,23 +42,39 @@ export class UsersController {
   }
 
   @Post('/signup')
-  create(@Body() body: CreateUserDto) {
-    return this.authService.signup(body.firstName, body.lastName, body.email, body.password);
+  async create(@Body() body: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signup(body.firstName, body.lastName, body.email, body.password);
+    session.userId = user.id;
+    return user;
   }
 
   @Post('/signin')
-  signin(@Body() body: SigninUserDto) {
-    return this.authService.signin(body.email, body.password);
+  async signin(@Body() body: SigninUserDto, @Session() session: any) {
+    const user = await this.authService.signin(body.email, body.password);
+    session.userId = user.id;
+    return user;
   }
 
-  @Get('/:id')
-  findUserById(@Param('id') id: string) {
-    return this.usersService.findOne(parseInt(id));
+  @Get('/whoami')
+  whoAmI(@Session() session: any) {
+    console.log('Current session userId:', session.userId);
+    return this.usersService.findOne(session.userId);
+  }
+
+  @Post('/signout')
+  signout(@Session() session: any) {
+    session.userId = null;
   }
 
   @Get('/users')
   findAllUsers() {
     return this.usersService.findAll();
+  }
+
+  @Get('/:id')
+  findUserById(@Param('id') id: string, @Session() session: any) {
+    console.log('Current session userId:', parseInt(session.userId));
+    return this.usersService.findOne(parseInt(id));
   }
 
   @Get()
