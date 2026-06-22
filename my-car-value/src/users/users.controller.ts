@@ -8,7 +8,8 @@ import {
   Query,
   Delete,
   Session,
-  UseInterceptors
+  UseInterceptors,
+  UseGuards
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
@@ -23,6 +24,7 @@ import { Serialize } from '../interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('auth')
 @Serialize(UserDto) // custom decorator to use SerializeInterceptor
@@ -60,6 +62,7 @@ export class UsersController {
   }
 
   @Get('/whoami')
+  @UseGuards(AuthGuard) // custom guard to protect route (controller specific guard)
   whoAmI(@CurrentUser() user: User) {
     return user;
   }
@@ -70,6 +73,7 @@ export class UsersController {
   }
 
   @Get('/users')
+  @UseGuards(AuthGuard)
   findAllUsers() {
     return this.usersService.findAll();
   }
